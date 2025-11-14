@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write     # nécessaire pour OIDC
-  contents: read      # nécessaire pour checkout
+  id-token: write
+  contents: read
 
 jobs:
   example:
@@ -14,6 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Dump OIDC token
+        run: |
+          echo "OIDC TOKEN PAYLOAD:"
+          echo "${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | base64 --decode || true
+
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
@@ -21,5 +26,4 @@ jobs:
           aws-region: eu-west-1
 
       - name: List buckets to test OIDC connection
-        run: |
-          aws s3 ls
+        run: aws s3 ls
